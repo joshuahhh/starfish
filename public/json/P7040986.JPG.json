@@ -1,0 +1,52 @@
+[
+  {
+    "name": "center",
+    "x": 2189,
+    "y": 1002
+  },
+  {
+    "name": "top_arm",
+    "x": 1342,
+    "y": 676
+  },
+  {
+    "name": "left_wrist",
+    "x": 1290,
+    "y": 1101
+  },
+  {
+    "name": "left_elbow",
+    "x": 1752,
+    "y": 1219
+  },
+  {
+    "name": "right_elbow",
+    "x": 2654,
+    "y": 908
+  },
+  {
+    "name": "right_wrist",
+    "x": 2675,
+    "y": 1252
+  },
+  {
+    "name": "left_knee",
+    "x": 1924,
+    "y": 1590
+  },
+  {
+    "name": "left_ankle",
+    "x": 1737,
+    "y": 1840
+  },
+  {
+    "name": "right_knee",
+    "x": 2364,
+    "y": 1403
+  },
+  {
+    "name": "right_ankle",
+    "x": 2633,
+    "y": 1644
+  }
+]
