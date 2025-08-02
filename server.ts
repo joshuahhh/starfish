@@ -50,12 +50,13 @@ app.get("/list", async (req, res) => {
     return;
   }
 
-  const folderPath = path.resolve(folder);
+  const folderPath = path.resolve("public", folder);
   try {
     const entries = await fs.readdir(folderPath);
     const files = entries.filter((entry) => entry.endsWith(".png"));
     res.json(files);
   } catch (error) {
+    console.error("Error reading folder:", error);
     res.status(500).send("Error reading folder");
   }
 });

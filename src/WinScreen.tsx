@@ -13,7 +13,7 @@ export const WinScreen = ({
 }) => {
   const [files, setFiles] = useState<string[]>([]);
 
-  const folder = `./public/snaps/${target.imgName}/`;
+  const folder = `./snaps/${target.imgName}/`;
 
   useEffect(() => {
     const fetchFiles = async () => {

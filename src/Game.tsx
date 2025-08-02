@@ -87,8 +87,8 @@ export const Game = () => {
   const webcam = useWebcam({
     // imgOverrideExt: "/josh-star-1.png",
 
-    preference: "Iriun",
-    // preference: "FaceTime",
+    // preference: "Iriun",
+    preference: "FaceTime",
     width: 1280,
     isMirrored: true,
     // imgOverrideExt: "/josh-star-1.png",
