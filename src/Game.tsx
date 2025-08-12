@@ -65,7 +65,7 @@ export const Game = () => {
       const starfishes = _.shuffle(
         await Promise.all(
           imgNames.map(async (imgName) => {
-            const response = await fetch(`/json/${imgName}.json`);
+            const response = await fetch(`json/${imgName}.json`);
             if (!response.ok) {
               throw new Error(`Failed to fetch JSON for ${imgName}`);
             }
@@ -105,7 +105,7 @@ export const Game = () => {
       setDetector(
         await poseDetection.createDetector(
           poseDetection.SupportedModels.MoveNet,
-          { modelUrl: "/movenet_singlepose_lightning/model.json" },
+          { modelUrl: "movenet_singlepose_lightning/model.json" },
         ),
       );
     };

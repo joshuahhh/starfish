@@ -58,7 +58,7 @@ export const WinScreen = ({
 
       <p className="text-lg mb-8">Space to continue</p>
       <div className="absolute top-8 left-8 w-1/6 border-white border-[6px]">
-        <img src={`/img/${target.imgName}`} className="max-w-full" />
+        <img src={`img/${target.imgName}`} className="max-w-full" />
       </div>
       <div className="dynapuff absolute top-10 left-[20%] text-7xl">
         🪸 ⭐{" "}

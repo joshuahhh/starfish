@@ -116,7 +116,7 @@ export const Round = ({
         >
           <img
             ref={setImg}
-            src={"/img/" + target.imgName}
+            src={"img/" + target.imgName}
             className="max-w-screen max-h-screen"
           />
           {showTarget &&
