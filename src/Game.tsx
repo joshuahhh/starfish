@@ -12,7 +12,7 @@ import { WinScreen } from "./WinScreen.js";
 
 // const starfishes = [starfish1, starfish2];
 
-export const imgNames = [
+export const starfishImgNames = [
   "P6300331.JPG",
   "P6300370.JPG",
   "P6300376.JPG",
@@ -65,7 +65,7 @@ export const Game = () => {
     const loadStarfishes = async () => {
       const starfishes = _.shuffle(
         await Promise.all(
-          imgNames.map(async (imgName) => {
+          starfishImgNames.map(async (imgName) => {
             const response = await fetch(`json/${imgName}.json`);
             if (!response.ok) {
               throw new Error(`Failed to fetch JSON for ${imgName}`);
