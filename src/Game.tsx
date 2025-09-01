@@ -3,6 +3,7 @@ import "@tensorflow/tfjs-backend-webgpu";
 import * as tf from "@tensorflow/tfjs-core";
 import _ from "lodash";
 import { useCallback, useEffect, useState } from "react";
+import { serverHost } from "./api.js";
 import { Round } from "./Round.js";
 import { Starfish } from "./starfishes.js";
 import { useRefForCallback } from "./useRefForCallback.js";
@@ -11,7 +12,7 @@ import { WinScreen } from "./WinScreen.js";
 
 // const starfishes = [starfish1, starfish2];
 
-const imgNames = [
+export const imgNames = [
   "P6300331.JPG",
   "P6300370.JPG",
   "P6300376.JPG",
@@ -243,7 +244,7 @@ async function uploadCanvas(canvas: HTMLCanvasElement, folder: string) {
   formData.append("file", blob, "image.png");
   formData.append("folder", folder);
 
-  const res = await fetch("http://localhost:3000/upload", {
+  const res = await fetch(`http://${serverHost}/upload`, {
     method: "POST",
     body: formData,
   });

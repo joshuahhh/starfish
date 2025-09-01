@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import ReactConfetti from "react-confetti";
+import { serverHost } from "./api.js";
 import { Starfish } from "./starfishes.js";
 
 export const WinScreen = ({
@@ -77,9 +78,9 @@ export const WinScreen = ({
   );
 };
 
-async function listFiles(folder: string): Promise<string[]> {
+export async function listFiles(folder: string): Promise<string[]> {
   const res = await fetch(
-    `http://localhost:3000/list?folder=${encodeURIComponent(folder)}`,
+    `http://${serverHost}/list?folder=${encodeURIComponent(folder)}`,
   );
   if (!res.ok) {
     throw new Error(`Failed to list files: ${await res.text()}`);

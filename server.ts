@@ -56,8 +56,12 @@ app.get("/list", async (req, res) => {
     const files = entries.filter((entry) => entry.endsWith(".png"));
     res.json(files);
   } catch (error) {
-    console.error("Error reading folder:", error);
-    res.status(500).send("Error reading folder");
+    if ((error as any).code === "ENOENT") {
+      res.json([]);
+    } else {
+      console.error("Error reading folder:", error);
+      res.status(500).send("Error reading folder");
+    }
   }
 });
 
