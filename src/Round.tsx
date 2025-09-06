@@ -1,5 +1,4 @@
 import * as poseDetection from "@tensorflow-models/pose-detection";
-import "@tensorflow/tfjs-backend-webgpu";
 import { interpolateBuGn } from "d3-scale-chromatic";
 import _ from "lodash";
 import { useEffect, useState } from "react";
