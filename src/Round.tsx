@@ -166,7 +166,7 @@ export const Round = ({
       )} */}
       {/* top center title */}
       <div
-        className="dynapuff absolute top-10 left-1/2 transform -translate-x-1/2 text-7xl"
+        className="dynapuff absolute top-10 left-1/2 transform -translate-x-1/2 text-7xl hidden xl:flex"
         style={{
           color: "#00f",
           textShadow:
