@@ -1,5 +1,5 @@
 import * as poseDetection from "@tensorflow-models/pose-detection";
-import "@tensorflow/tfjs-backend-webgpu";
+import "@tensorflow/tfjs-backend-webgl";
 import * as tf from "@tensorflow/tfjs-core";
 import _ from "lodash";
 import { useCallback, useEffect, useState } from "react";
