@@ -7,7 +7,7 @@ import {
   SVGContainerElement,
 } from "./svg-stuff.js";
 
-export const Admin = () => {
+export const Gallery = () => {
   const [numStarfish, setNumStarfish] = useState(0);
   const [numWins, setNumWins] = useState(0);
 
