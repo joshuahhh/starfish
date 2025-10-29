@@ -51,7 +51,7 @@ async function startStream(
 
   const constraints: MediaStreamConstraints = {
     video: {
-      deviceId: { exact: deviceId },
+      deviceId,
       width: { exact: width }, // ask for the 720 p preset
       // height: { exact: 1080 }, // ask for the 1080 p preset
       // frameRate: { max: 30 }, // tell the solver “30 fps is enough”
