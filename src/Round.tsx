@@ -232,26 +232,13 @@ function poseSvg(
           dist !== undefined ? interpolateBuGn(1 - dist / 800) : color;
         const r = keypoint.name === "center" ? strokeWidth : strokeWidth / 2;
         return (
-          <>
-            <circle
-              key={keypoint.name}
-              cx={keypoint.x}
-              cy={keypoint.y}
-              r={r}
-              fill={jointColor}
-            />
-            {/* {dist && (
-              <text
-                x={keypoint.x}
-                y={keypoint.y - strokeWidth / 2}
-                fill="white"
-                fontSize={strokeWidth / 2}
-                textAnchor="middle"
-              >
-                {dist.toFixed(0)}
-              </text>
-            )} */}
-          </>
+          <circle
+            key={keypoint.name}
+            cx={keypoint.x}
+            cy={keypoint.y}
+            r={r}
+            fill={jointColor}
+          />
         );
       })}
     </svg>
