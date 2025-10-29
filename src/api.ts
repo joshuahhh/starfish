@@ -1,6 +1,11 @@
+export interface FileMetadata {
+  filename: string;
+  mtime: string;
+}
+
 export interface FileAccess {
   uploadFile(file: Blob, folder: string): Promise<string>;
-  listFiles(folder: string): Promise<string[]>;
+  listFiles(folder: string): Promise<FileMetadata[]>;
 }
 
 export class FileAccessFromServer implements FileAccess {
@@ -23,7 +28,7 @@ export class FileAccessFromServer implements FileAccess {
     return await res.text();
   }
 
-  async listFiles(folder: string): Promise<string[]> {
+  async listFiles(folder: string): Promise<FileMetadata[]> {
     const res = await fetch(
       `${this.baseUrl}/list?folder=${encodeURIComponent(folder)}`,
     );

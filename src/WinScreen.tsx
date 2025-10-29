@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import ReactConfetti from "react-confetti";
-import { fileAccess } from "./api.js";
+import { fileAccess, FileMetadata } from "./api.js";
 import { Starfish } from "./starfishes.js";
 
 export const WinScreen = ({
@@ -12,7 +12,7 @@ export const WinScreen = ({
   winningSnapDataUrl: string | null;
   onProgress: () => void;
 }) => {
-  const [files, setFiles] = useState<string[]>([]);
+  const [files, setFiles] = useState<FileMetadata[]>([]);
 
   const folder = `./snaps/${target.imgName}/`;
 
@@ -49,8 +49,8 @@ export const WinScreen = ({
         )}
         {[...files].reverse().map((file) => (
           <img
-            key={file}
-            src={`${folder}${file}`}
+            key={file.filename}
+            src={`${folder}${file.filename}`}
             className=""
             style={{ transform: "scaleX(-1)" }}
           />

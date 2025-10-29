@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fileAccess } from "./api.js";
+import { fileAccess, FileMetadata } from "./api.js";
 import { starfishImgNames } from "./Game.js";
 import {
   downloadSvgAsJpeg,
@@ -41,15 +41,15 @@ export const PicsForStarfish = ({
 }: {
   starfishImgName: string;
 }) => {
-  const [winImgNames, setWinImgNames] = useState<string[] | null>(null);
+  const [winImages, setWinImages] = useState<FileMetadata[] | null>(null);
 
   const folder = `./snaps/${starfishImgName}/`;
 
   useEffect(() => {
     const fetchFiles = async () => {
       try {
-        const winImgNames = await fileAccess.listFiles(folder);
-        setWinImgNames(winImgNames);
+        const files = await fileAccess.listFiles(folder);
+        setWinImages(files);
       } catch (error) {
         console.error("Failed to list files:", error);
       }
@@ -67,17 +67,21 @@ export const PicsForStarfish = ({
           className="starfish-pic max-h-32 scale-x-[-1]"
         />
       </div>
-      {winImgNames !== null ? (
+      {winImages !== null ? (
         <div className="flex flex-row flex-wrap gap-2">
-          {winImgNames.map((winImgName) => (
+          {winImages.map((file) => (
             <a
-              key={winImgName}
-              href={`#souvenir/${starfishImgName}/${winImgName}`}
+              key={file.filename}
+              href={`#souvenir/${starfishImgName}/${file.filename}`}
+              className="flex flex-col items-center gap-1"
             >
               <img
-                src={`${folder}${winImgName}`}
+                src={`${folder}${file.filename}`}
                 className="win-pic max-h-32"
               />
+              <div className="text-xs text-gray-600">
+                {new Date(file.mtime).toLocaleString()}
+              </div>
             </a>
           ))}
         </div>

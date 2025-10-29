@@ -53,8 +53,20 @@ app.get("/list", async (req, res) => {
   const folderPath = path.resolve("public", folder);
   try {
     const entries = await fs.readdir(folderPath);
-    const files = entries.filter((entry) => entry.endsWith(".png"));
-    res.json(files);
+    const pngFiles = entries.filter((entry) => entry.endsWith(".png"));
+
+    const filesWithMetadata = await Promise.all(
+      pngFiles.map(async (filename) => {
+        const filePath = path.join(folderPath, filename);
+        const stats = await fs.stat(filePath);
+        return {
+          filename,
+          mtime: stats.mtime.toISOString(),
+        };
+      }),
+    );
+
+    res.json(filesWithMetadata);
   } catch (error) {
     if ((error as any).code === "ENOENT") {
       res.json([]);
