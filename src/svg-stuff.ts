@@ -92,12 +92,11 @@ export async function downloadSvgAsJpeg(
   const w = vb.width;
   const h = vb.height;
 
-  // Serialize SVG to a Blob URL
+  // Serialize SVG to a data URL (Firefox compatible with embedded images)
   if (!svg.getAttribute("xmlns"))
     svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
   const svgString = new XMLSerializer().serializeToString(svg);
-  const svgBlob = new Blob([svgString], { type: "image/svg+xml" });
-  const svgUrl = URL.createObjectURL(svgBlob);
+  const svgUrl = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgString)));
 
   // Canvas (hi-dpi aware)
   const dpr = window.devicePixelRatio * scale;
@@ -116,11 +115,9 @@ export async function downloadSvgAsJpeg(
     const img = new Image();
     img.onload = () => {
       ctx.drawImage(img, 0, 0, w, h);
-      URL.revokeObjectURL(svgUrl);
       resolve();
     };
     img.onerror = (e) => {
-      URL.revokeObjectURL(svgUrl);
       reject(e);
     };
     img.src = svgUrl;

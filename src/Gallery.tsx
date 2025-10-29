@@ -137,6 +137,7 @@ export const Souvenir = (props: {
   const { starfishImgName, winImgName } = props;
 
   const [svgDiv, setSvgDiv] = useState<HTMLDivElement | null>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     if (!svgDiv) return;
@@ -168,11 +169,18 @@ export const Souvenir = (props: {
         <div ref={setSvgDiv} className="flex w-[50vw]" />
         <button
           onClick={async () => {
-            const svg = svgDiv!.querySelector("svg")! as SVGContainerElement;
-            await downloadSvgAsJpeg(svg);
+            setIsDownloading(true);
+            try {
+              const svg = svgDiv!.querySelector("svg")! as SVGContainerElement;
+              await downloadSvgAsJpeg(svg);
+            } finally {
+              setIsDownloading(false);
+            }
           }}
+          disabled={isDownloading}
+          className={isDownloading ? "opacity-50 cursor-wait" : ""}
         >
-          Download Souvenir
+          {isDownloading ? "Downloading..." : "Download Souvenir"}
         </button>
       </div>
     </div>
