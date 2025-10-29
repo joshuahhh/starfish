@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import ReactConfetti from "react-confetti";
 import { fileAccess, FileMetadata } from "./api.js";
+import { SouvenirImage } from "./Souvenir.js";
 import { Starfish } from "./starfishes.js";
 
 export const WinScreen = ({
@@ -41,26 +42,23 @@ export const WinScreen = ({
       <ReactConfetti />
       <div className="grid grid-cols-3 mt-36">
         {winningSnapDataUrl && (
-          <img
-            src={winningSnapDataUrl}
-            className="col-start-1 col-span-2 row-start-1 row-span-2 border-[6px] border-white"
-            style={{ transform: "scaleX(-1)" }}
-          />
+          <div className="col-start-1 col-span-2 row-start-1 row-span-2">
+            <SouvenirImage
+              starfishImgName={target.imgName}
+              winDataUrl={winningSnapDataUrl}
+            />
+          </div>
         )}
         {[...files].reverse().map((file) => (
           <img
             key={file.filename}
             src={`${folder}${file.filename}`}
             className=""
-            style={{ transform: "scaleX(-1)" }}
           />
         ))}
       </div>
 
       <p className="text-lg mb-8">Space to continue</p>
-      <div className="absolute top-8 left-8 w-1/6 border-white border-[6px]">
-        <img src={`img/${target.imgName}`} className="max-w-full" />
-      </div>
       <div className="dynapuff absolute top-10 left-[20%] text-7xl">
         🪸 ⭐{" "}
         <span

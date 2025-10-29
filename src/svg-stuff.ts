@@ -1,33 +1,6 @@
 export type SVGContainerElement = HTMLElement & SVGSVGElement;
 
-// export async function imageToFlippedDataUri(url: string): Promise<string> {
-//   return new Promise((resolve, reject) => {
-//     const img = new Image();
-//     img.crossOrigin = "anonymous"; // allow CORS images
-//     img.onload = () => {
-//       const canvas = document.createElement("canvas");
-//       const ctx = canvas.getContext("2d");
-//       if (!ctx) {
-//         reject(new Error("Could not get canvas context"));
-//         return;
-//       }
-
-//       canvas.width = img.width;
-//       canvas.height = img.height;
-
-//       // Flip horizontally by scaling -1 in X
-//       ctx.translate(canvas.width, 0);
-//       ctx.scale(-1, 1);
-//       ctx.drawImage(img, 0, 0);
-
-//       resolve(canvas.toDataURL());
-//     };
-//     img.onerror = (err) => reject(err);
-//     img.src = url;
-//   });
-// }
-
-export async function imageToDataUri(
+export async function imageToDataUrl(
   url: string,
   options?: { flipHorizontal?: boolean },
 ): Promise<string> {
@@ -96,7 +69,9 @@ export async function downloadSvgAsJpeg(
   if (!svg.getAttribute("xmlns"))
     svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
   const svgString = new XMLSerializer().serializeToString(svg);
-  const svgUrl = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgString)));
+  const svgUrl =
+    "data:image/svg+xml;base64," +
+    btoa(unescape(encodeURIComponent(svgString)));
 
   // Canvas (hi-dpi aware)
   const dpr = window.devicePixelRatio * scale;

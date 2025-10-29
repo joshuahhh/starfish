@@ -100,7 +100,10 @@
       <use xlink:href="#image1_77_4" transform="scale(0.00108696 0.00102881)"/>
     </pattern>
     <pattern id="pattern3_77_4" patternContentUnits="objectBoundingBox" width="1" height="1">
-      <use xlink:href="#image2_77_4" transform="scale(0.000761035 0.0010395)"/>
+      <!-- reflect starfish horizontally -->
+      <g transform="scale(-1 1) translate(-1 0)">
+        <use xlink:href="#image2_77_4" transform="scale(0.000761035 0.0010395)"/>
+      </g>
     </pattern>
     <clipPath id="clip0_77_4">
       <rect width="1522" height="1009.43" fill="white"/>

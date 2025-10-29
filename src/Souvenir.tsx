@@ -1,34 +1,34 @@
 import { useEffect, useState } from "react";
 import {
   downloadSvgAsJpeg,
-  imageToDataUri,
+  imageToDataUrl,
   SVGContainerElement,
 } from "./svg-stuff.js";
 
 export const SouvenirImage = (props: {
   starfishImgName: string;
-  winImgName: string;
+  winImgName?: string;
+  winDataUrl?: string;
   onSvgReady?: (svg: SVGContainerElement) => void;
 }) => {
-  const { starfishImgName, winImgName, onSvgReady } = props;
+  const { starfishImgName, winImgName, winDataUrl, onSvgReady } = props;
 
   const [svgDiv, setSvgDiv] = useState<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!svgDiv) return;
     const go = async () => {
-      const [flippedStarfishDataUri, winDataUri] = await Promise.all([
-        imageToDataUri(`./img/${starfishImgName}`, { flipHorizontal: true }),
-        imageToDataUri(`./snaps/${starfishImgName}/${winImgName}`),
-      ]);
+      const starfishDataUrl = await imageToDataUrl(`./img/${starfishImgName}`);
+      const winDataUrlFinal =
+        winDataUrl ??
+        (await imageToDataUrl(`./snaps/${starfishImgName}/${winImgName}`));
 
       const text = await (await fetch("souvenir/template.svg")).text();
       const svg = new DOMParser().parseFromString(text, "image/svg+xml")
         .documentElement as SVGContainerElement;
-      svg
-        .querySelector("#image2_77_4")!
-        .setAttribute("href", flippedStarfishDataUri);
-      svg.querySelector("#image0_77_4")!.setAttribute("href", winDataUri);
+      // the starfish is now reflected in the svg template
+      svg.querySelector("#image2_77_4")!.setAttribute("href", starfishDataUrl);
+      svg.querySelector("#image0_77_4")!.setAttribute("href", winDataUrlFinal);
 
       svg.removeAttribute("width");
       svg.removeAttribute("height");
@@ -40,7 +40,7 @@ export const SouvenirImage = (props: {
       }
     };
     go();
-  }, [starfishImgName, svgDiv, winImgName, onSvgReady]);
+  }, [starfishImgName, svgDiv, winImgName, winDataUrl, onSvgReady]);
 
   return <div ref={setSvgDiv} className="flex w-full" />;
 };

@@ -96,3 +96,8 @@
   font-style: normal;
   font-variation-settings: "wdth" 100;
 }
+
+html,
+body {
+  background: black;
+}
