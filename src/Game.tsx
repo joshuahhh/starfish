@@ -3,7 +3,7 @@ import "@tensorflow/tfjs-backend-webgl";
 import * as tf from "@tensorflow/tfjs-core";
 import _ from "lodash";
 import { useCallback, useEffect, useState } from "react";
-import { serverHost } from "./api.js";
+import { fileAccess } from "./api.js";
 import { Round } from "./Round.js";
 import { Starfish } from "./starfishes.js";
 import { useRefForCallback } from "./useRefForCallback.js";
@@ -240,18 +240,6 @@ async function uploadCanvas(canvas: HTMLCanvasElement, folder: string) {
   );
   if (!blob) throw new Error("Failed to convert canvas to blob");
 
-  const formData = new FormData();
-  formData.append("file", blob, "image.png");
-  formData.append("folder", folder);
-
-  const res = await fetch(`http://${serverHost}/upload`, {
-    method: "POST",
-    body: formData,
-  });
-
-  if (!res.ok) {
-    throw new Error(`Upload failed: ${await res.text()}`);
-  }
-
-  console.log(await res.text());
+  const result = await fileAccess.uploadFile(blob, folder);
+  console.log(result);
 }

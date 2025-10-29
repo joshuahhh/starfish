@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
+import { fileAccess } from "./api.js";
 import { starfishImgNames } from "./Game.js";
-import { listFiles } from "./WinScreen.js";
 import {
   downloadSvgAsJpeg,
   imageToDataUri,
@@ -48,7 +48,7 @@ export const PicsForStarfish = ({
   useEffect(() => {
     const fetchFiles = async () => {
       try {
-        const winImgNames = await listFiles(folder);
+        const winImgNames = await fileAccess.listFiles(folder);
         setWinImgNames(winImgNames);
       } catch (error) {
         console.error("Failed to list files:", error);
