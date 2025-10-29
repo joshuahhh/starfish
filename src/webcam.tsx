@@ -234,12 +234,6 @@ export const WebcamSelect = ({
   );
 };
 
-function togglePlay(video: HTMLVideoElement | HTMLImageElement) {
-  if (video instanceof HTMLVideoElement) {
-    video.paused ? video.play() : video.pause();
-  }
-}
-
 export const Webcam = ({ webcam }: { webcam: Webcam }) => {
   const stream = webcam.stream;
 
@@ -255,74 +249,10 @@ export const Webcam = ({ webcam }: { webcam: Webcam }) => {
     return <div className="text-2xl">No webcam stream available</div>;
   }
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [isDraggedOver, setIsDraggedOver] = useState(false);
-
   return (
     <div
       style={{
         ...(webcam.isMirrored ? { transform: "scaleX(-1)" } : {}),
-        opacity: isDraggedOver ? 0.5 : 1,
-      }}
-      onClick={() => {
-        if (stream.video instanceof HTMLImageElement) {
-          webcam.setImgOverride(null);
-        } else {
-          togglePlay(stream.video);
-        }
-      }}
-      onDoubleClick={() => {
-        console.log("double click");
-        // undo the pause/play from single click
-        togglePlay(stream.video);
-
-        // save frame as image
-        const canvas = document.createElement("canvas");
-        canvas.width = stream.width;
-        canvas.height = stream.height;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) {
-          console.error("Failed to get canvas context");
-          return;
-        }
-        ctx.drawImage(stream.video, 0, 0, canvas.width, canvas.height);
-        const link = document.createElement("a");
-        link.href = canvas.toDataURL("image/png");
-        webcam.setImgOverride(link.href);
-        link.download = "webcam_capture.png";
-        link.click();
-      }}
-      onDragOver={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsDraggedOver(true);
-      }}
-      onDragLeave={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsDraggedOver(false);
-      }}
-      onDrop={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsDraggedOver(false);
-
-        // handle file drop
-        const files = e.dataTransfer.files;
-        if (files.length !== 1) {
-          console.warn("Dropped files:", files);
-          return;
-        }
-        const file = files[0];
-        if (!file.type.startsWith("image/")) {
-          console.warn("Dropped file is not an image:", file);
-          return;
-        }
-        const reader = new FileReader();
-        reader.onload = () => {
-          webcam.setImgOverride(reader.result as string);
-        };
-        reader.readAsDataURL(file);
       }}
     >
       <DomNode node={stream.video} />
