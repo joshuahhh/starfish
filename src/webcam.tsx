@@ -124,14 +124,21 @@ export function Webcam({ webcam }: { webcam: Webcam }) {
   const [showSelector, setShowSelector] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Update DOM when stream changes
+  // Update DOM when container ref or stream changes
   useEffect(() => {
     const container = containerRef.current;
     if (!container || !stream) return;
 
-    container.innerHTML = "";
-    container.appendChild(stream.video);
-  }, [stream]);
+    // Re-append the video element
+    if (stream.video.parentNode !== container) {
+      container.appendChild(stream.video);
+    }
+
+    // Ensure video is playing after being re-attached
+    if (stream.video.paused) {
+      stream.video.play().catch(() => {});
+    }
+  });
 
   // Close selector when device changes
   useEffect(() => {
