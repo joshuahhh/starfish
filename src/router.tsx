@@ -1,7 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { HashRouter, Route, Routes } from "react-router-dom";
-import { Gallery, Souvenir } from "./Gallery.js";
+import { Gallery } from "./Gallery.js";
+import { Souvenir } from "./Souvenir.js";
 import { autoRoute } from "./autoRoute.js";
 import { Editor } from "./Editor.js";
 import { Game } from "./Game.js";

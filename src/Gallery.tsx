@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
 import { fileAccess, FileMetadata } from "./api.js";
 import { starfishImgNames } from "./Game.js";
-import {
-  downloadSvgAsJpeg,
-  imageToDataUri,
-  SVGContainerElement,
-} from "./svg-stuff.js";
 
 type SortMode = "starfish" | "date";
 
@@ -126,63 +121,6 @@ export const Gallery = () => {
             ))}
         </div>
       )}
-    </div>
-  );
-};
-
-export const Souvenir = (props: {
-  starfishImgName: string;
-  winImgName: string;
-}) => {
-  const { starfishImgName, winImgName } = props;
-
-  const [svgDiv, setSvgDiv] = useState<HTMLDivElement | null>(null);
-  const [isDownloading, setIsDownloading] = useState(false);
-
-  useEffect(() => {
-    if (!svgDiv) return;
-    const go = async () => {
-      const [flippedStarfishDataUri, winDataUri] = await Promise.all([
-        imageToDataUri(`./img/${starfishImgName}`, { flipHorizontal: true }),
-        imageToDataUri(`./snaps/${starfishImgName}/${winImgName}`),
-      ]);
-
-      const text = await (await fetch("souvenir/template.svg")).text();
-      const svg = new DOMParser().parseFromString(text, "image/svg+xml")
-        .documentElement as SVGContainerElement;
-      svg
-        .querySelector("#image2_77_4")!
-        .setAttribute("href", flippedStarfishDataUri);
-      svg.querySelector("#image0_77_4")!.setAttribute("href", winDataUri);
-
-      svg.removeAttribute("width");
-      svg.removeAttribute("height");
-
-      svgDiv.replaceChildren(svg);
-    };
-    go();
-  }, [starfishImgName, svgDiv, winImgName]);
-
-  return (
-    <div className="w-screen h-screen flex items-center justify-center bg-[#46828C]">
-      <div className="flex flex-col items-center gap-4">
-        <div ref={setSvgDiv} className="flex w-[50vw]" />
-        <button
-          onClick={async () => {
-            setIsDownloading(true);
-            try {
-              const svg = svgDiv!.querySelector("svg")! as SVGContainerElement;
-              await downloadSvgAsJpeg(svg);
-            } finally {
-              setIsDownloading(false);
-            }
-          }}
-          disabled={isDownloading}
-          className={isDownloading ? "opacity-50 cursor-wait" : ""}
-        >
-          {isDownloading ? "Downloading..." : "Download Souvenir"}
-        </button>
-      </div>
     </div>
   );
 };
