@@ -47,7 +47,9 @@ export const FileAccessWrapper = ({
     return (
       <div className="flex items-center justify-center h-screen">
         <style>{`html, body { background: black; }`}</style>
-        <div className="text-2xl text-white">Loading file access...</div>
+        <div className="text-2xl text-white dynapuff">
+          Loading file access...
+        </div>
       </div>
     );
   }

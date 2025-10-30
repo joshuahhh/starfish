@@ -151,6 +151,10 @@ export const Game = () => {
     setWinMode(false);
   }, [starfishIdx, starfishes]);
 
+  const handleReplay = useCallback(() => {
+    setWinMode(false);
+  }, []);
+
   useEffect(() => {
     if (winMode) return;
 
@@ -222,7 +226,9 @@ export const Game = () => {
     return (
       <div className="flex items-center justify-center h-screen">
         <style>{`html, body { background: black; }`}</style>
-        <div className="text-2xl text-white">Loading {loadingMsg}...</div>
+        <div className="text-2xl text-white dynapuff">
+          Loading {loadingMsg}...
+        </div>
       </div>
     );
   }
@@ -232,6 +238,7 @@ export const Game = () => {
       starfishImgName={target.imgName}
       winningSnapDataUrl={winMode.winningSnapDataUrl}
       onProgress={handleProgress}
+      onReplay={handleReplay}
     />
   ) : (
     <Round

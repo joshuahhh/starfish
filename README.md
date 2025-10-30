@@ -8,7 +8,12 @@
   - [ ] clean up file access impl
   - [ ] better file access UI
 - [x] fix gallery souvenirs
-- [ ] win screen progression...
-  - [ ] pause countdown ⏸️
-  - [ ] do starfish again ⏮️
-  - [ ] button to progress ⏭️
+- [x] win screen progression...
+  - [x] pause countdown ⏸️
+  - [x] do starfish again ⏮️
+  - [x] button to progress ⏭️
+
+stretch...
+
+- [ ] merge snaps from browser to folder
+- [ ] download / upload snaps (zip?)
