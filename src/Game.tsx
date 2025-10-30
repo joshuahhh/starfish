@@ -10,54 +10,62 @@ import { useRefForCallback } from "./useRefForCallback.js";
 import { onWebcamFrame, screenshotAsCanvas, useWebcam } from "./webcam.js";
 import { WinScreen } from "./WinScreen.js";
 
-export const starfishImgNames = false
-  ? ["P6300419.JPG"] // asymmetric starfish, for testing flips
-  : [
-      "P6300331.JPG",
-      "P6300370.JPG",
-      "P6300376.JPG",
-      "P6300415.JPG",
-      "P6300419.JPG",
-      "P6300421.JPG",
-      "P6300441.JPG",
-      "P6300443.JPG",
-      "P6300448.JPG",
-      "P6300449.JPG",
-      "P6300457.JPG",
-      "P7030585.JPG",
-      "P7030586.JPG",
-      "P7030588.JPG",
-      "P7030590.JPG",
-      "P7030592.JPG",
-      "P7030593.JPG",
-      "P7030595.JPG",
-      "P7030596.JPG",
-      "P7030598.JPG",
-      "P7030599.JPG",
-      "P7030608.JPG",
-      "P7030609.JPG",
-      "P7030610.JPG",
-      "P7030644.JPG",
-      "P7030725.JPG",
-      "P7040741.JPG",
-      "P7040809.JPG",
-      "P7040815.JPG",
-      "P7040838.JPG",
-      "P7040840.JPG",
-      "P7040849.JPG",
-      "P7040854.JPG",
-      "P7040856.JPG",
-      "P7040858.JPG",
-      "P7040859.JPG",
-      "P7040984.JPG",
-      "P7040985.JPG",
-      "P7040986.JPG",
-      "P7040989.JPG",
-      "P7040990.JPG",
-      "P7041007.JPG",
-      "P7041048.JPG",
-      "P7041051.JPG",
-    ];
+export let starfishImgNames = [
+  "P6300331.JPG",
+  "P6300370.JPG",
+  "P6300376.JPG",
+  "P6300415.JPG",
+  "P6300419.JPG",
+  "P6300421.JPG",
+  "P6300441.JPG",
+  "P6300443.JPG",
+  "P6300448.JPG",
+  "P6300449.JPG",
+  "P6300457.JPG",
+  "P7030585.JPG",
+  "P7030586.JPG",
+  "P7030588.JPG",
+  "P7030590.JPG",
+  "P7030592.JPG",
+  "P7030593.JPG",
+  "P7030595.JPG",
+  "P7030596.JPG",
+  "P7030598.JPG",
+  "P7030599.JPG",
+  "P7030608.JPG",
+  "P7030609.JPG",
+  "P7030610.JPG",
+  "P7030644.JPG",
+  "P7030725.JPG",
+  "P7040741.JPG",
+  "P7040809.JPG",
+  "P7040815.JPG",
+  "P7040838.JPG",
+  "P7040840.JPG",
+  "P7040849.JPG",
+  "P7040854.JPG",
+  "P7040856.JPG",
+  "P7040858.JPG",
+  "P7040859.JPG",
+  "P7040984.JPG",
+  "P7040985.JPG",
+  "P7040986.JPG",
+  "P7040989.JPG",
+  "P7040990.JPG",
+  "P7041007.JPG",
+  "P7041048.JPG",
+  "P7041051.JPG",
+];
+
+// asymmetric starfish, for testing flips
+if (false) {
+  starfishImgNames = ["P6300419.JPG"];
+}
+
+// portrait-mode starfish, for testing aspect ratios
+if (false) {
+  starfishImgNames = ["P7040809.JPG"];
+}
 
 type WinMode = false | { winningSnapDataUrl: string };
 
