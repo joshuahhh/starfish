@@ -152,10 +152,15 @@ export const Game = () => {
   useEffect(() => {
     if (winMode) return;
 
-    // "w" simulates a win, without saving
     const handleKeyDown = (event: KeyboardEvent) => {
+      // "w" simulates a win, without saving
       if (event.key === "w") {
         handleWin(false);
+      }
+
+      // "W" forces a win, with saving
+      if (event.key === "W") {
+        handleWin(true);
       }
 
       if (event.key === " ") {
