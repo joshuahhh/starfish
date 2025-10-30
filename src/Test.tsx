@@ -8,21 +8,9 @@ export const Test = () => {
   const testMode = searchParams.get("test") as TestMode | null;
 
   if (testMode === "win-screen-single") {
-    return (
-      <WinScreen
-        onProgress={() => {}}
-        starfishImgName="P6300331.JPG"
-        winningSnapDataUrl=""
-      />
-    );
+    return <WinScreen starfishImgName="P6300331.JPG" winningSnapDataUrl="" />;
   } else if (testMode === "win-screen-multiple") {
-    return (
-      <WinScreen
-        onProgress={() => {}}
-        starfishImgName="P6300370.JPG"
-        winningSnapDataUrl=""
-      />
-    );
+    return <WinScreen starfishImgName="P6300370.JPG" winningSnapDataUrl="" />;
   } else {
     return <div>Invalid test mode</div>;
   }

@@ -13,8 +13,8 @@ export const WinScreen = ({
 }: {
   starfishImgName: string;
   winningSnapDataUrl: string;
-  onProgress: () => void;
-  onReplay: () => void;
+  onProgress?: () => void;
+  onReplay?: () => void;
 }) => {
   const fileAccess = useContext(FileAccessContext);
   const [files, setFiles] = useState<FileMetadata[]>([]);
