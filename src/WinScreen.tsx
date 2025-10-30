@@ -74,8 +74,8 @@ export const WinScreen = ({
         </div>
       )}
 
-      <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-black rounded-lg px-6 py-3 text-center">
-        <div className="dynapuff text-5xl">
+      <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-black rounded-full px-6 py-3 text-center">
+        <div className="dynapuff text-5xl whitespace-nowrap">
           🪸 ⭐{" "}
           <span
             style={{
@@ -88,7 +88,7 @@ export const WinScreen = ({
           </span>{" "}
           ⭐ 🪸
         </div>
-        (or hit space)
+        or hit space
       </div>
     </div>
   );
