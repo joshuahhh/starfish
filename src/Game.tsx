@@ -59,6 +59,8 @@ export const starfishImgNames = false
       "P7041051.JPG",
     ];
 
+type WinMode = false | { winningSnapDataUrl: string };
+
 export const Game = () => {
   const [starfishes, setStarfishes] = useState<Starfish[] | null>(null);
   useEffect(() => {
@@ -82,7 +84,7 @@ export const Game = () => {
 
   const [starfishIdx, setStarfishIdx] = useState(0);
   const target = starfishes ? starfishes[starfishIdx] : null;
-  const [winMode, setWinMode] = useState(false);
+  const [winMode, setWinMode] = useState<WinMode>(false);
 
   const webcam = useWebcam({
     // imgOverrideExt: "/josh-star-1.png",
@@ -112,18 +114,13 @@ export const Game = () => {
     loadModel();
   }, []);
 
-  const [winningSnapDataUrl, setWinningSnapDataUrl] = useState<string | null>(
-    null,
-  );
-
   const streamRef = useRefForCallback(stream);
   const handleWin = useCallback(
     (saveSnap = true) => {
       if (!target) return;
       const stream = streamRef.current;
-      setWinMode(true);
       const snapCanvas = screenshotAsCanvas(stream!);
-      setWinningSnapDataUrl(snapCanvas.toDataURL());
+      setWinMode({ winningSnapDataUrl: snapCanvas.toDataURL() });
       if (saveSnap) {
         const destPath = `./public/snaps/${target.imgName}/`;
         uploadCanvas(snapCanvas, destPath)
@@ -142,7 +139,6 @@ export const Game = () => {
     if (!starfishes) return;
     setStarfishIdx((starfishIdx + 1) % starfishes.length);
     setWinMode(false);
-    setWinningSnapDataUrl(null);
   }, [starfishIdx, starfishes]);
 
   useEffect(() => {
@@ -218,7 +214,7 @@ export const Game = () => {
   return winMode ? (
     <WinScreen
       target={target}
-      winningSnapDataUrl={winningSnapDataUrl}
+      winningSnapDataUrl={winMode.winningSnapDataUrl}
       onProgress={handleProgress}
     />
   ) : (

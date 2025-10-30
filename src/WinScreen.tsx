@@ -10,10 +10,11 @@ export const WinScreen = ({
   onProgress = () => {},
 }: {
   target: Starfish;
-  winningSnapDataUrl: string | null;
+  winningSnapDataUrl: string;
   onProgress: () => void;
 }) => {
   const [files, setFiles] = useState<FileMetadata[]>([]);
+  const [secondsLeft, setSecondsLeft] = useState(2000);
 
   const folder = `./snaps/${target.imgName}/`;
 
@@ -31,46 +32,63 @@ export const WinScreen = ({
   }, [folder]);
 
   useEffect(() => {
-    const cancelTimeout = setTimeout(() => {
+    if (secondsLeft === 0) {
       onProgress();
-    }, 20000);
-    return () => clearTimeout(cancelTimeout);
-  }, [onProgress]);
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      setSecondsLeft(secondsLeft - 1);
+    }, 1000);
+
+    return () => clearTimeout(timeout);
+  }, [secondsLeft, onProgress]);
+
+  const souvenirImage = (
+    <SouvenirImage
+      starfishImgName={target.imgName}
+      winDataUrl={winningSnapDataUrl}
+    />
+  );
 
   return (
     <div className="flex flex-col items-center h-screen bg-black text-gray-100">
+      <style>{`html, body { background: black; }`}</style>
       <ReactConfetti />
-      <div className="grid grid-cols-3 mt-36">
-        {winningSnapDataUrl && (
+      {files.length > 0 ? (
+        <div className="w-full grid grid-cols-3">
           <div className="col-start-1 col-span-2 row-start-1 row-span-2">
-            <SouvenirImage
-              starfishImgName={target.imgName}
-              winDataUrl={winningSnapDataUrl}
-            />
+            {souvenirImage}
           </div>
-        )}
-        {[...files].reverse().map((file) => (
-          <img
-            key={file.filename}
-            src={`${folder}${file.filename}`}
-            className=""
-          />
-        ))}
-      </div>
+          {[...files].reverse().map((file) => (
+            <img
+              key={file.filename}
+              src={`${folder}${file.filename}`}
+              className=""
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="w-full flex-grow flex flex-col items-center justify-center">
+          {souvenirImage}
+        </div>
+      )}
 
-      <p className="text-lg mb-8">Space to continue</p>
-      <div className="dynapuff absolute top-10 left-[20%] text-7xl">
-        🪸 ⭐{" "}
-        <span
-          style={{
-            color: "#00f",
-            textShadow:
-              "-4px -4px 0 #fff, 4px -4px 0 #fff, -4px 4px 0 #fff, 4px 4px 0 #fff",
-          }}
-        >
-          You are the Starfish!
-        </span>{" "}
-        ⭐ 🪸
+      <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-black rounded-lg px-6 py-3 text-center">
+        <div className="dynapuff text-5xl">
+          🪸 ⭐{" "}
+          <span
+            style={{
+              color: "#00f",
+              textShadow:
+                "-4px -4px 0 #fff, 4px -4px 0 #fff, -4px 4px 0 #fff, 4px 4px 0 #fff",
+            }}
+          >
+            Next starfish in {secondsLeft}...
+          </span>{" "}
+          ⭐ 🪸
+        </div>
+        (or hit space)
       </div>
     </div>
   );
