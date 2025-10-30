@@ -69,7 +69,7 @@ export const WinScreen = ({
           ))}
         </div>
       ) : (
-        <div className="w-full flex-grow flex flex-col items-center justify-center">
+        <div className="w-[60vw] h-[80vh] mx-auto flex items-center justify-center">
           {souvenirImage}
         </div>
       )}
