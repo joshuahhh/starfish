@@ -1,11 +1,21 @@
-import { useEffect, useState } from "react";
-import { fileAccess, FileMetadata } from "./api.js";
+import { useContext, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { FileMetadata } from "./FileAccess.js";
+import { FileAccessContext } from "./FileAccessContext.js";
 import { starfishImgNames } from "./Game.js";
+import { ImgFromFileAccess } from "./ImgFromFileAccess.js";
 
 type SortMode = "starfish" | "date";
 
 export const Gallery = () => {
-  const [sortMode, setSortMode] = useState<SortMode>("starfish");
+  const fileAccess = useContext(FileAccessContext);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const sortMode: SortMode =
+    (searchParams.get("sort") as SortMode | null) ?? "starfish";
+  const setSortMode = (mode: SortMode) => {
+    setSearchParams({ sort: mode });
+  };
+
   const [allImages, setAllImages] = useState<
     Array<FileMetadata & { starfishImgName: string }>
   >([]);
@@ -14,7 +24,7 @@ export const Gallery = () => {
     const fetchAllImages = async () => {
       const allImagesPromises = starfishImgNames.map(
         async (starfishImgName) => {
-          const folder = `./snaps/${starfishImgName}/`;
+          const folder = `snaps/${starfishImgName}/`;
           try {
             const files = await fileAccess.listFiles(folder);
             return files.map((file) => ({ ...file, starfishImgName }));
@@ -22,16 +32,16 @@ export const Gallery = () => {
             console.error("Failed to list files:", error);
             return [];
           }
-        }
+        },
       );
       const results = await Promise.all(allImagesPromises);
       const flattened = results.flat();
       setAllImages(flattened);
     };
     fetchAllImages();
-  }, []);
+  }, [fileAccess]);
 
-  const numStarfish = new Set(allImages.map((img) => img.starfishImgName)).size;
+  const numStarfish = starfishImgNames.length;
   const numWins = allImages.length;
 
   return (
@@ -67,9 +77,8 @@ export const Gallery = () => {
         <div className="flex flex-col items-start gap-2">
           {starfishImgNames.map((starfishImgName) => {
             const images = allImages.filter(
-              (img) => img.starfishImgName === starfishImgName
+              (img) => img.starfishImgName === starfishImgName,
             );
-            if (images.length === 0) return null;
             return (
               <div key={starfishImgName} className="flex flex-row gap-2">
                 <div className="flex flex-row justify-end min-w-48">
@@ -86,8 +95,9 @@ export const Gallery = () => {
                       href={`#souvenir/${starfishImgName}/${file.filename}`}
                       className="flex flex-col items-center gap-1"
                     >
-                      <img
-                        src={`./snaps/${starfishImgName}/${file.filename}`}
+                      <ImgFromFileAccess
+                        folder={`snaps/${starfishImgName}`}
+                        filename={file.filename}
                         className="win-pic max-h-32"
                       />
                       <div className="text-xs text-gray-600">
@@ -110,8 +120,9 @@ export const Gallery = () => {
                 href={`#souvenir/${image.starfishImgName}/${image.filename}`}
                 className="flex flex-col items-center gap-1"
               >
-                <img
-                  src={`./snaps/${image.starfishImgName}/${image.filename}`}
+                <ImgFromFileAccess
+                  folder={`snaps/${image.starfishImgName}`}
+                  filename={image.filename}
                   className="win-pic w-full"
                 />
                 <div className="text-xs text-gray-600">

@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { ReactNode, useContext, useEffect, useState } from "react";
+import { FileAccessContext } from "./FileAccessContext.js";
 import {
   downloadSvgAsJpeg,
   imageToDataUrl,
@@ -7,13 +8,16 @@ import {
 
 export const SouvenirImage = (props: {
   starfishImgName: string;
-  winImgName?: string;
-  winDataUrl?: string;
-  onSvgReady?: (svg: SVGContainerElement) => void;
+  winImg: { filename: string } | { dataUrl: string };
+  showDownloadButton?: boolean;
 }) => {
-  const { starfishImgName, winImgName, winDataUrl, onSvgReady } = props;
+  const { starfishImgName, winImg, showDownloadButton = false } = props;
 
   const [svgDiv, setSvgDiv] = useState<HTMLDivElement | null>(null);
+  const [svg, setSvg] = useState<SVGContainerElement | null>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const fileAccess = useContext(FileAccessContext);
 
   useEffect(() => {
     if (!svgDiv) return;
@@ -26,9 +30,14 @@ export const SouvenirImage = (props: {
       const isPortrait = starfishImg.height > starfishImg.width;
 
       const starfishDataUrl = await imageToDataUrl(`./img/${starfishImgName}`);
-      const winDataUrlFinal =
-        winDataUrl ??
-        (await imageToDataUrl(`./snaps/${starfishImgName}/${winImgName}`));
+
+      const winUrl =
+        "dataUrl" in winImg
+          ? winImg.dataUrl
+          : await fileAccess.getFileContentsUrl(
+              `snaps/${starfishImgName}`,
+              winImg.filename,
+            );
 
       const text = await (await fetch("souvenir/template.svg")).text();
       const svg = new DOMParser().parseFromString(text, "image/svg+xml")
@@ -36,7 +45,7 @@ export const SouvenirImage = (props: {
 
       // the starfish is now reflected in the svg template
       svg.querySelector("#image2_77_4")!.setAttribute("href", starfishDataUrl);
-      svg.querySelector("#image0_77_4")!.setAttribute("href", winDataUrlFinal);
+      svg.querySelector("#image0_77_4")!.setAttribute("href", winUrl);
 
       // Adjust the starfish rect if portrait mode
       if (isPortrait) {
@@ -57,17 +66,56 @@ export const SouvenirImage = (props: {
 
       svg.removeAttribute("width");
       svg.removeAttribute("height");
+      svg.style.width = "100%";
+      svg.style.height = "100%";
+      svg.style.objectFit = "contain";
 
       svgDiv.replaceChildren(svg);
 
-      if (onSvgReady) {
-        onSvgReady(svg);
-      }
+      setSvg(svg);
     };
     go();
-  }, [starfishImgName, svgDiv, winImgName, winDataUrl, onSvgReady]);
+  }, [starfishImgName, svgDiv, winImg, fileAccess]);
 
-  return <div ref={setSvgDiv} className="flex w-full" />;
+  const handleDownload = async () => {
+    if (!svg) return;
+    setIsDownloading(true);
+    try {
+      await downloadSvgAsJpeg(svg);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  return (
+    <div className="relative">
+      <div ref={setSvgDiv} className="w-full h-full" />
+      {showDownloadButton && (
+        <button
+          onClick={handleDownload}
+          disabled={isDownloading || !svg}
+          className="dynapuff absolute bottom-0 right-4 translate-y-1/2 bg-[#ff6b6b] hover:bg-[#ff5252] disabled:opacity-50 disabled:cursor-wait text-white text-xl px-6 py-2 rounded-[2rem] shadow-lg hover:scale-105 hover:rotate-2 transition-all"
+          style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.3)" }}
+        >
+          {isDownloading ? "Downloading..." : "Download!"}
+        </button>
+      )}
+    </div>
+  );
+};
+
+export const SouvenirImageCenterer = (props: { children: ReactNode }) => {
+  // this is where we spent like an hour figuring out how to do "max
+  // size while preserving aspect ratio"; apparently this used to be
+  // impossible before "container queries", whatever that means; ugh
+
+  return (
+    <div className="w-full h-full grid place-items-center [container-type:size]">
+      <div className="relative aspect-[1522/1008] w-[min(100cqi,calc(100cqh*1522/1008))]">
+        {props.children}
+      </div>
+    </div>
+  );
 };
 
 export const Souvenir = (props: {
@@ -76,34 +124,16 @@ export const Souvenir = (props: {
 }) => {
   const { starfishImgName, winImgName } = props;
 
-  const [svg, setSvg] = useState<SVGContainerElement | null>(null);
-  const [isDownloading, setIsDownloading] = useState(false);
-
   return (
     <div className="w-screen h-screen flex items-center justify-center bg-[#46828C]">
-      <div className="flex flex-col items-center gap-4">
-        <div className="w-[50vw]">
+      <div className="w-full h-[80vh]">
+        <SouvenirImageCenterer>
           <SouvenirImage
             starfishImgName={starfishImgName}
-            winImgName={winImgName}
-            onSvgReady={setSvg}
+            winImg={{ filename: winImgName }}
+            showDownloadButton={true}
           />
-        </div>
-        <button
-          onClick={async () => {
-            if (!svg) return;
-            setIsDownloading(true);
-            try {
-              await downloadSvgAsJpeg(svg);
-            } finally {
-              setIsDownloading(false);
-            }
-          }}
-          disabled={isDownloading || !svg}
-          className={isDownloading ? "opacity-50 cursor-wait" : ""}
-        >
-          {isDownloading ? "Downloading..." : "Download Souvenir"}
-        </button>
+        </SouvenirImageCenterer>
       </div>
     </div>
   );

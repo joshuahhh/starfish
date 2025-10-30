@@ -2,8 +2,9 @@ import * as poseDetection from "@tensorflow-models/pose-detection";
 import "@tensorflow/tfjs-backend-webgl";
 import * as tf from "@tensorflow/tfjs-core";
 import _ from "lodash";
-import { useCallback, useEffect, useState } from "react";
-import { fileAccess } from "./api.js";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { FileAccess } from "./FileAccess.js";
+import { FileAccessContext } from "./FileAccessContext.js";
 import { Round } from "./Round.js";
 import { Starfish } from "./starfishes.js";
 import { useRefForCallback } from "./useRefForCallback.js";
@@ -70,6 +71,7 @@ if (false) {
 type WinMode = false | { winningSnapDataUrl: string };
 
 export const Game = () => {
+  const fileAccess = useContext(FileAccessContext);
   const [starfishes, setStarfishes] = useState<Starfish[] | null>(null);
   useEffect(() => {
     const loadStarfishes = async () => {
@@ -124,14 +126,14 @@ export const Game = () => {
 
   const streamRef = useRefForCallback(stream);
   const handleWin = useCallback(
-    (saveSnap = true) => {
+    async (saveSnap = true) => {
       if (!target) return;
       const stream = streamRef.current;
       const snapCanvas = screenshotAsCanvas(stream!);
       setWinMode({ winningSnapDataUrl: snapCanvas.toDataURL() });
       if (saveSnap) {
-        const destPath = `./public/snaps/${target.imgName}/`;
-        uploadCanvas(snapCanvas, destPath)
+        const destPath = `snaps/${target.imgName}/`;
+        uploadCanvas(fileAccess, snapCanvas, destPath)
           .then(() => {
             console.log("Screenshot uploaded to", destPath);
           })
@@ -140,7 +142,7 @@ export const Game = () => {
           });
       }
     },
-    [streamRef, target],
+    [streamRef, target, fileAccess],
   );
 
   const handleProgress = useCallback(() => {
@@ -213,20 +215,21 @@ export const Game = () => {
 
   if (!stream || !detector || !starfishes || !target) {
     const loadingMsg = [
-      ...(stream ? [] : ["video"]),
+      ...(stream ? [] : ["webcam"]),
       ...(detector ? [] : ["model"]),
       ...(starfishes ? [] : ["starfishes"]),
     ].join(" and ");
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="text-2xl">Loading {loadingMsg}...</div>
+        <style>{`html, body { background: black; }`}</style>
+        <div className="text-2xl text-white">Loading {loadingMsg}...</div>
       </div>
     );
   }
 
   return winMode ? (
     <WinScreen
-      target={target}
+      starfishImgName={target.imgName}
       winningSnapDataUrl={winMode.winningSnapDataUrl}
       onProgress={handleProgress}
     />
@@ -242,12 +245,16 @@ export const Game = () => {
   );
 };
 
-async function uploadCanvas(canvas: HTMLCanvasElement, folder: string) {
+async function uploadCanvas(
+  fileAccess: FileAccess,
+  canvas: HTMLCanvasElement,
+  folder: string,
+) {
   const blob = await new Promise<Blob | null>((resolve) =>
     canvas.toBlob(resolve),
   );
   if (!blob) throw new Error("Failed to convert canvas to blob");
 
-  const result = await fileAccess.uploadFile(blob, folder);
+  const result = await fileAccess.saveFile(blob, folder);
   console.log(result);
 }

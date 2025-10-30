@@ -1,22 +1,23 @@
-import { useEffect, useState } from "react";
-import ReactConfetti from "react-confetti";
-import { fileAccess, FileMetadata } from "./api.js";
-import { SouvenirImage } from "./Souvenir.js";
-import { Starfish } from "./starfishes.js";
+import { useContext, useEffect, useState } from "react";
+import { FileMetadata } from "./FileAccess.js";
+import { FileAccessContext } from "./FileAccessContext.js";
+import { ImgFromFileAccess } from "./ImgFromFileAccess.js";
+import { SouvenirImage, SouvenirImageCenterer } from "./Souvenir.js";
 
 export const WinScreen = ({
-  target,
+  starfishImgName,
   winningSnapDataUrl,
   onProgress = () => {},
 }: {
-  target: Starfish;
+  starfishImgName: string;
   winningSnapDataUrl: string;
   onProgress: () => void;
 }) => {
+  const fileAccess = useContext(FileAccessContext);
   const [files, setFiles] = useState<FileMetadata[]>([]);
   const [secondsLeft, setSecondsLeft] = useState(2000);
 
-  const folder = `./snaps/${target.imgName}/`;
+  const folder = `snaps/${starfishImgName}/`;
 
   useEffect(() => {
     const fetchFiles = async () => {
@@ -29,7 +30,7 @@ export const WinScreen = ({
       }
     };
     fetchFiles();
-  }, [folder]);
+  }, [fileAccess, folder]);
 
   useEffect(() => {
     if (secondsLeft === 0) {
@@ -46,36 +47,38 @@ export const WinScreen = ({
 
   const souvenirImage = (
     <SouvenirImage
-      starfishImgName={target.imgName}
-      winDataUrl={winningSnapDataUrl}
+      starfishImgName={starfishImgName}
+      winImg={{ dataUrl: winningSnapDataUrl }}
+      showDownloadButton={true}
     />
   );
 
   return (
     <div className="flex flex-col items-center h-screen bg-black text-gray-100">
       <style>{`html, body { background: black; }`}</style>
-      <ReactConfetti />
+      {/* <ReactConfetti /> */}
       {files.length > 0 ? (
         <div className="w-full grid grid-cols-3">
           <div className="col-start-1 col-span-2 row-start-1 row-span-2">
             {souvenirImage}
           </div>
           {[...files].reverse().map((file) => (
-            <img
+            <ImgFromFileAccess
               key={file.filename}
-              src={`${folder}${file.filename}`}
+              folder={folder}
+              filename={file.filename}
               className=""
             />
           ))}
         </div>
       ) : (
-        <div className="w-[60vw] h-[80vh] mx-auto flex items-center justify-center">
-          {souvenirImage}
+        <div className="w-full h-[calc(100vh-120px)] flex items-center justify-center">
+          <SouvenirImageCenterer>{souvenirImage}</SouvenirImageCenterer>
         </div>
       )}
 
-      <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-black rounded-full px-6 py-3 text-center">
-        <div className="dynapuff text-5xl whitespace-nowrap">
+      <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 bg-black rounded-t-[3rem] px-6 py-3 text-center">
+        <div className="dynapuff text-4xl whitespace-nowrap">
           🪸 ⭐{" "}
           <span
             style={{

@@ -18,7 +18,7 @@ app.post("/upload", upload.single("file"), async (req, res) => {
     return;
   }
 
-  const folderPath = path.resolve(folder);
+  const folderPath = path.resolve("public", folder);
   await fs.mkdir(folderPath, { recursive: true });
 
   // Find smallest unused number
