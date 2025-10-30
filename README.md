@@ -6,12 +6,13 @@
 - [x] button to download souvenir from win screen
 - [ ] file access api stuff
   - [ ] clean up file access impl
-  - [ ] better file access UI
+  - [x] better file access UI
 - [x] fix gallery souvenirs
 - [x] win screen progression...
   - [x] pause countdown ⏸️
   - [x] do starfish again ⏮️
   - [x] button to progress ⏭️
+- [ ] button for "skip this starfish"
 
 stretch...
 

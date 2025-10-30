@@ -18,7 +18,7 @@ export const WinScreen = ({
 }) => {
   const fileAccess = useContext(FileAccessContext);
   const [files, setFiles] = useState<FileMetadata[]>([]);
-  const [secondsLeft, setSecondsLeft] = useState(2000);
+  const [secondsLeft, setSecondsLeft] = useState(20);
   const [isPaused, setIsPaused] = useState(false);
   const isPausedRef = useRefForCallback(isPaused);
 
