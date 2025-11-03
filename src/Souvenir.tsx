@@ -31,13 +31,17 @@ export const SouvenirImage = (props: {
 
       const starfishDataUrl = await imageToDataUrl(`./img/${starfishImgName}`);
 
-      const winUrl =
-        "dataUrl" in winImg
-          ? winImg.dataUrl
-          : await fileAccess.getFileContentsUrl(
-              `snaps/${starfishImgName}`,
-              winImg.filename,
-            );
+      let winUrl: string;
+      if ("dataUrl" in winImg) {
+        winUrl = winImg.dataUrl;
+      } else {
+        const blobUrl = await fileAccess.getFileContentsUrl(
+          `snaps/${starfishImgName}`,
+          winImg.filename,
+        );
+        // Convert blob URL to data URL for Chrome compatibility
+        winUrl = await imageToDataUrl(blobUrl);
+      }
 
       const text = await (await fetch("souvenir/template.svg")).text();
       const svg = new DOMParser().parseFromString(text, "image/svg+xml")

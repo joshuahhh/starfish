@@ -13,6 +13,7 @@
   - [x] do starfish again ⏮️
   - [x] button to progress ⏭️
 - [ ] button for "skip this starfish"
+- [ ] make saving features work on ipad
 
 stretch...
 
