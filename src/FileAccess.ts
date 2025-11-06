@@ -3,7 +3,7 @@ import JSZip from "jszip";
 
 export interface FileMetadata {
   filename: string;
-  mtime: string;
+  timestamp: string;
 }
 
 export class FileAccess {
@@ -38,10 +38,31 @@ export class FileAccess {
     const files: FileMetadata[] = [];
     for await (const entry of resolvedDir.values()) {
       if (entry.kind === "file") {
-        const file = await (entry as FileSystemFileHandle).getFile();
+        // Extract timestamp from filename (format: snap-YYYY-MM-DDTHH-MM-SS-sssZ.png)
+        // The timestamp has colons and periods replaced with dashes
+        const match = entry.name.match(/^snap-(.+)\.png$/);
+        let timestamp: string;
+
+        if (match) {
+          // Convert filename timestamp back to ISO format
+          // snap-2025-11-06T07-45-30-123Z.png -> 2025-11-06T07:45:30.123Z
+          const timestampStr = match[1];
+
+          // The format is: YYYY-MM-DDTHH-MM-SS-sssZ with dashes instead of colons/periods
+          // We need to convert back: restore the colons in time and period before milliseconds
+          const isoTimestamp = timestampStr
+            .replace(/^(\d{4}-\d{2}-\d{2}T\d{2})-(\d{2})-(\d{2})-(\d{3}Z)$/, '$1:$2:$3.$4');
+
+          timestamp = isoTimestamp;
+        } else {
+          // Fallback to file system timestamp if filename doesn't match expected format
+          const file = await (entry as FileSystemFileHandle).getFile();
+          timestamp = new Date(file.lastModified).toISOString();
+        }
+
         files.push({
           filename: entry.name,
-          mtime: new Date(file.lastModified).toISOString(),
+          timestamp,
         });
       }
     }
