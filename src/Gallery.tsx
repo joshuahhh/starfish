@@ -263,9 +263,9 @@ export const Gallery = () => {
       {sortMode === "starfish" ? (
         <div className="flex flex-col items-start gap-2">
           {starfishImgNames.map((starfishImgName) => {
-            const images = allImages.filter(
-              (img) => img.starfishImgName === starfishImgName,
-            );
+            const images = allImages
+              .filter((img) => img.starfishImgName === starfishImgName)
+              .sort((a, b) => a.timestamp.localeCompare(b.timestamp));
             return (
               <div key={starfishImgName} className="flex flex-row gap-2">
                 <div className="flex flex-row justify-end min-w-48">
