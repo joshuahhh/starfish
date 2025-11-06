@@ -103,6 +103,15 @@ export const Gallery = () => {
   const numStarfish = starfishImgNames.length;
   const numWins = allImages.length;
 
+  const handleDownloadZip = async () => {
+    try {
+      await fileAccess.downloadAsZip();
+    } catch (error) {
+      console.error("Failed to download ZIP:", error);
+      alert("Failed to download ZIP file");
+    }
+  };
+
   return (
     <div className="p-10">
       <div className="flex justify-between items-center pb-4">
@@ -110,6 +119,13 @@ export const Gallery = () => {
           {numStarfish} happy starfish; {numWins} happy humans.
         </h2>
         <div className="flex gap-2">
+          <button
+            onClick={handleDownloadZip}
+            className="px-4 py-2 rounded bg-green-600 hover:bg-green-700 text-white"
+            title="Download all snaps as ZIP"
+          >
+            Download ZIP
+          </button>
           <button
             onClick={() => setSortMode("starfish")}
             className={`px-4 py-2 rounded ${

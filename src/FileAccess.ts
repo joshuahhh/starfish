@@ -1,4 +1,5 @@
 import { openDB } from "idb";
+import JSZip from "jszip";
 
 export interface FileMetadata {
   filename: string;
@@ -82,6 +83,76 @@ export class FileAccess {
       const blobUrl = this.blobCache.get(cacheKey)!;
       URL.revokeObjectURL(blobUrl);
       this.blobCache.delete(cacheKey);
+    }
+  }
+
+  async downloadAsZip(): Promise<void> {
+    const zip = new JSZip();
+
+    // Recursively add all files from the root directory
+    await this.addDirectoryToZip(zip, this.rootDir, "");
+
+    // Generate the ZIP file
+    const blob = await zip.generateAsync({ type: "blob" });
+
+    // Trigger download
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `starfish-snaps-${new Date().toISOString().split("T")[0]}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  async uploadFromZip(zipFile: File): Promise<void> {
+    const zip = await JSZip.loadAsync(zipFile);
+
+    // Process each file in the ZIP
+    for (const relativePath in zip.files) {
+      const zipEntry = zip.files[relativePath];
+
+      // Skip directories (they'll be created automatically)
+      if (zipEntry.dir) continue;
+
+      // Get the file blob
+      const blob = await zipEntry.async("blob");
+
+      // Split path into folder and filename
+      const pathParts = relativePath.split("/");
+      const filename = pathParts.pop()!;
+      const folder = pathParts.join("/");
+
+      // Create the directory structure if needed
+      const targetDir = await followPath(this.rootDir, folder, true);
+
+      // Write the file
+      const fileHandle = await targetDir.getFileHandle(filename, {
+        create: true,
+      });
+      const writable = await fileHandle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+    }
+  }
+
+  private async addDirectoryToZip(
+    zip: JSZip,
+    dirHandle: FileSystemDirectoryHandle,
+    path: string,
+  ): Promise<void> {
+    for await (const entry of dirHandle.values()) {
+      const entryPath = path ? `${path}/${entry.name}` : entry.name;
+
+      if (entry.kind === "file") {
+        const fileHandle = entry as FileSystemFileHandle;
+        const file = await fileHandle.getFile();
+        zip.file(entryPath, file);
+      } else if (entry.kind === "directory") {
+        const subDirHandle = entry as FileSystemDirectoryHandle;
+        await this.addDirectoryToZip(zip, subDirHandle, entryPath);
+      }
     }
   }
 }
