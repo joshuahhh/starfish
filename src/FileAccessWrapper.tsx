@@ -2,18 +2,18 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FileAccessContext } from "./FileAccessContext.js";
 import {
-  FileAccessFromFS,
+  FileAccess,
   opfsFileAccess,
   restoreDirectoryHandle,
   selectLocalDirectory,
-} from "./FileAccessFromFS.js";
+} from "./FileAccess.js";
 
 export const FileAccessWrapper = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
-  const [fileAccess, setFileAccess] = useState<FileAccessFromFS | null>(null);
+  const [fileAccess, setFileAccess] = useState<FileAccess | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
