@@ -8,4 +8,5 @@ export interface FileAccess {
   saveFile(file: Blob, folder: string): Promise<string>;
   listFiles(folder: string): Promise<FileMetadata[]>;
   getFileContentsUrl(folder: string, filename: string): Promise<string>;
+  deleteFile(folder: string, filename: string): Promise<void>;
 }

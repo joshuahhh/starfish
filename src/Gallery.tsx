@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { FileMetadata } from "./FileAccess.js";
 import { FileAccessContext } from "./FileAccessContext.js";
@@ -6,6 +6,66 @@ import { starfishImgNames } from "./Game.js";
 import { ImgFromFileAccess } from "./ImgFromFileAccess.js";
 
 type SortMode = "starfish" | "date";
+
+const Snap = ({
+  starfishImgName,
+  filename,
+  mtime,
+  onDeleted,
+  imgClassName,
+}: {
+  starfishImgName: string;
+  filename: string;
+  mtime: string;
+  onDeleted: () => void;
+  imgClassName?: string;
+}) => {
+  const fileAccess = useContext(FileAccessContext);
+
+  const handleDelete = async () => {
+    if (!confirm("Are you sure you want to delete this image?")) {
+      return;
+    }
+    try {
+      await fileAccess.deleteFile(`snaps/${starfishImgName}`, filename);
+      onDeleted();
+    } catch (error) {
+      console.error("Failed to delete file:", error);
+      alert("Failed to delete image");
+    }
+  };
+
+  return (
+    <div className={`relative flex flex-col items-center gap-1`}>
+      <a
+        href={`#souvenir/${starfishImgName}/${filename}`}
+        className="flex flex-col items-center gap-1"
+      >
+        <div className="relative">
+          <ImgFromFileAccess
+            folder={`snaps/${starfishImgName}`}
+            filename={filename}
+            className={imgClassName}
+          />
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              handleDelete();
+            }}
+            className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold shadow-lg"
+            title="Delete image"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="text-xs text-gray-600">
+          {new Date(mtime).toLocaleString()}
+        </div>
+      </a>
+    </div>
+  );
+};
 
 export const Gallery = () => {
   const fileAccess = useContext(FileAccessContext);
@@ -20,26 +80,25 @@ export const Gallery = () => {
     Array<FileMetadata & { starfishImgName: string }>
   >([]);
 
-  useEffect(() => {
-    const fetchAllImages = async () => {
-      const allImagesPromises = starfishImgNames.map(
-        async (starfishImgName) => {
-          const folder = `snaps/${starfishImgName}/`;
-          try {
-            const files = await fileAccess.listFiles(folder);
-            return files.map((file) => ({ ...file, starfishImgName }));
-          } catch (error) {
-            console.error("Failed to list files:", error);
-            return [];
-          }
-        },
-      );
-      const results = await Promise.all(allImagesPromises);
-      const flattened = results.flat();
-      setAllImages(flattened);
-    };
-    fetchAllImages();
+  const fetchAllImages = useCallback(async () => {
+    const allImagesPromises = starfishImgNames.map(async (starfishImgName) => {
+      const folder = `snaps/${starfishImgName}/`;
+      try {
+        const files = await fileAccess.listFiles(folder);
+        return files.map((file) => ({ ...file, starfishImgName }));
+      } catch (error) {
+        console.error("Failed to list files:", error);
+        return [];
+      }
+    });
+    const results = await Promise.all(allImagesPromises);
+    const flattened = results.flat();
+    setAllImages(flattened);
   }, [fileAccess]);
+
+  useEffect(() => {
+    fetchAllImages();
+  }, [fetchAllImages, fileAccess]);
 
   const numStarfish = starfishImgNames.length;
   const numWins = allImages.length;
@@ -89,21 +148,15 @@ export const Gallery = () => {
                   />
                 </div>
                 <div className="flex flex-row flex-wrap gap-2">
-                  {images.map((file) => (
-                    <a
-                      key={file.filename}
-                      href={`#souvenir/${starfishImgName}/${file.filename}`}
-                      className="flex flex-col items-center gap-1"
-                    >
-                      <ImgFromFileAccess
-                        folder={`snaps/${starfishImgName}`}
-                        filename={file.filename}
-                        className="win-pic max-h-32"
-                      />
-                      <div className="text-xs text-gray-600">
-                        {new Date(file.mtime).toLocaleString()}
-                      </div>
-                    </a>
+                  {images.map(({ filename, mtime }) => (
+                    <Snap
+                      key={filename}
+                      imgClassName="max-h-32"
+                      starfishImgName={starfishImgName}
+                      filename={filename}
+                      mtime={mtime}
+                      onDeleted={fetchAllImages}
+                    />
                   ))}
                 </div>
               </div>
@@ -114,21 +167,14 @@ export const Gallery = () => {
         <div className="grid grid-cols-4 gap-4">
           {[...allImages]
             .sort((a, b) => b.mtime.localeCompare(a.mtime))
-            .map((image) => (
-              <a
-                key={`${image.starfishImgName}/${image.filename}`}
-                href={`#souvenir/${image.starfishImgName}/${image.filename}`}
-                className="flex flex-col items-center gap-1"
-              >
-                <ImgFromFileAccess
-                  folder={`snaps/${image.starfishImgName}`}
-                  filename={image.filename}
-                  className="win-pic w-full"
-                />
-                <div className="text-xs text-gray-600">
-                  {new Date(image.mtime).toLocaleString()}
-                </div>
-              </a>
+            .map(({ filename, starfishImgName, mtime }) => (
+              <Snap
+                key={`${starfishImgName}/${filename}`}
+                starfishImgName={starfishImgName}
+                filename={filename}
+                mtime={mtime}
+                onDeleted={fetchAllImages}
+              />
             ))}
         </div>
       )}

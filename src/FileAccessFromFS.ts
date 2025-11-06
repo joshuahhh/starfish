@@ -63,6 +63,23 @@ export class FileAccessFromFS implements FileAccess {
     }
     return this.blobCache.get(cacheKey)!;
   }
+
+  async deleteFile(folder: string, filename: string): Promise<void> {
+    const resolvedDir = await followPath(this.rootDir, folder);
+    if (!resolvedDir) {
+      throw new Error(`Folder not found: ${folder}`);
+    }
+
+    await resolvedDir.removeEntry(filename);
+
+    // Clear from blob cache if present
+    const cacheKey = `${folder}/${filename}`;
+    if (this.blobCache.has(cacheKey)) {
+      const blobUrl = this.blobCache.get(cacheKey)!;
+      URL.revokeObjectURL(blobUrl);
+      this.blobCache.delete(cacheKey);
+    }
+  }
 }
 
 async function followPath(
